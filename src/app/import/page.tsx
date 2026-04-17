@@ -35,8 +35,14 @@ export default function ImportPage() {
       let lines = text.split(/\r?\n/).filter(l => l.trim())
       if (lines.length < 2) return
 
-      // PCA商魂の先頭バージョン行（\text や #で始まる行）をスキップ
-      while (lines.length > 0 && (lines[0].startsWith('\\') || lines[0].startsWith('#'))) {
+      // PCA商魂のバージョン行をスキップ
+      // パターン: \text で始まる行、#で始まる行、"\text で始まる行（クォートあり）
+      while (lines.length > 0 && (
+        lines[0].startsWith('\\') ||
+        lines[0].startsWith('#') ||
+        lines[0].startsWith('"\\') ||
+        /^"?\\text/i.test(lines[0])
+      )) {
         lines = lines.slice(1)
       }
       if (lines.length < 2) return
