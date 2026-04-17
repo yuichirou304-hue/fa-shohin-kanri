@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navItems = [
+  { href: '/projects', label: '案件管理' },
   { href: '/products', label: '商材マスタ' },
   { href: '/customers', label: '顧客マスタ' },
   { href: '/suppliers', label: '仕入先マスタ' },
