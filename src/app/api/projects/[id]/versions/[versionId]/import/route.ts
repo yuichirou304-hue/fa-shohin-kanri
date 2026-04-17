@@ -15,7 +15,8 @@ export async function POST(
 
   const arrayBuffer = await file.arrayBuffer()
   const workbook = new ExcelJS.Workbook()
-  await workbook.xlsx.load(arrayBuffer as Buffer)
+  const buffer = Buffer.from(new Uint8Array(arrayBuffer))
+  await workbook.xlsx.load(buffer)
 
   // 機器試算シートを探す（「(」を含まない方を優先）
   let sheet = workbook.getWorksheet('機器試算')
