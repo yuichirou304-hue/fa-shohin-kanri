@@ -13,9 +13,9 @@ export async function POST(
   const file = formData.get('file') as File
   if (!file) return NextResponse.json({ error: 'ファイルがありません' }, { status: 400 })
 
-  const buffer = Buffer.from(await file.arrayBuffer())
+  const arrayBuffer = await file.arrayBuffer()
   const workbook = new ExcelJS.Workbook()
-  await workbook.xlsx.load(buffer)
+  await workbook.xlsx.load(arrayBuffer as Buffer)
 
   // 機器試算シートを探す（「(」を含まない方を優先）
   let sheet = workbook.getWorksheet('機器試算')
