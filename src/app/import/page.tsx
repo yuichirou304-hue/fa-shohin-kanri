@@ -32,11 +32,23 @@ export default function ImportPage() {
     const reader = new FileReader()
     reader.onload = (ev) => {
       const text = ev.target?.result as string
-      // Shift-JIS対応のため、TextDecoderでの読み込みを試みる
-      const lines = text.split(/\r?\n/).filter(l => l.trim())
+      let lines = text.split(/\r?\n/).filter(l => l.trim())
       if (lines.length < 2) return
 
+      // PCA商魂の先頭バージョン行（\text や #で始まる行）をスキップ
+      while (lines.length > 0 && (lines[0].startsWith('\\') || lines[0].startsWith('#'))) {
+        lines = lines.slice(1)
+      }
+      if (lines.length < 2) return
+
+      // 区切り文字を自動判定（タブ or カンマ）
+      const delimiter = lines[0].includes('\t') ? '\t' : ','
+
       const parseCSVLine = (line: string) => {
+        if (delimiter === '\t') {
+          // タブ区切りはシンプルに分割
+          return line.split('\t').map(v => v.replace(/^"|"$/g, '').trim())
+        }
         const result: string[] = []
         let current = ''
         let inQuote = false
@@ -55,7 +67,7 @@ export default function ImportPage() {
         return result
       }
 
-      const hdrs = parseCSVLine(lines[0])
+      const hdrs = parseCSVLine(lines[0]).map(h => h.trim())
       setHeaders(hdrs)
 
       // 自動マッピング（PCA商魂の一般的な列名）
