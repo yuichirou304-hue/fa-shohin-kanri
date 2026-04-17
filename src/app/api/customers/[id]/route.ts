@@ -3,13 +3,15 @@ import { createServerClient } from '@/lib/supabase'
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = createServerClient()
+  const { id } = await params
+
   const { data, error } = await supabase
     .from('customers')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 404 })
@@ -18,9 +20,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = createServerClient()
+  const { id } = await params
   const body = await request.json()
 
   const { data, error } = await supabase
@@ -40,7 +43,7 @@ export async function PUT(
       notes: body.notes || null,
       is_active: body.is_active ?? true,
     })
-    .eq('id', params.id)
+    .eq('id', id)
     .select()
     .single()
 
@@ -50,13 +53,15 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = createServerClient()
+  const { id } = await params
+
   const { error } = await supabase
     .from('customers')
     .delete()
-    .eq('id', params.id)
+    .eq('id', id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
